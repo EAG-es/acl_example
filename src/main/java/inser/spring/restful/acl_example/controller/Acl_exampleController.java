@@ -2,7 +2,9 @@ package inser.spring.restful.acl_example.controller;
 
 import innui.modelos.errors.Oks;
 import inser.spring.restful.acl_example.entity.Acl_actorsEntity;
-import static inser.spring.restful.acl_example.repository.Acl_jpaRepository.k_acl_jpaRepository_group;
+import static inser.spring.restful.acl_example.repository.Acl_jpaRepository.k_acl_jpaRepository_admin;
+import static inser.spring.restful.acl_example.repository.Acl_jpaRepository.k_acl_jpaRepository_write;
+
 import inser.spring.restful.acl_example.service.AclService;
 import java.io.File;
 import org.springframework.http.HttpStatus;
@@ -41,8 +43,8 @@ public class Acl_exampleController {
         if (ok.is == false) { return false; }
         try {
             Acl_actorsEntity acl_actorsEntity = new Acl_actorsEntity();
-            acl_actorsEntity.setId_acl_actor(k_acl_jpaRepository_group);
-            aclService.setAcl_actorsEntity(acl_actorsEntity);
+            acl_actorsEntity.setId_acl_actor(k_acl_jpaRepository_write);
+            aclService.setAcl_actorsEntity_to_check(acl_actorsEntity);
         } catch (Exception e) {
             ok.setTxt(e);
         }
@@ -55,21 +57,22 @@ public class Acl_exampleController {
      * @throws java.lang.Exception
      */
     @GetMapping("/test")
-    public ResponseEntity<String> test() throws Exception {
-        ResponseEntity<String> retorno = null;
+    public ResponseEntity<? extends Object> test() throws Exception {
+        ResponseEntity<Acl_actorsEntity> retorno = null;
         Oks ok = new Oks();
         do {
             try {
-                long count;
-                count = aclService.aclRepository.getAcl_actorsRepository().count();
-                retorno = new ResponseEntity<> (String.valueOf(count), HttpStatus.OK);
-
+                Acl_actorsEntity acl_actorsEntity = new Acl_actorsEntity();
+                acl_actorsEntity.setId_acl_actor("jpaRepository_write");
+                acl_actorsEntity.setPrincipal_type(0);
+                acl_actorsEntity = aclService.aclRepository.getAcl_actorsRepository().save(acl_actorsEntity);
+                retorno = new ResponseEntity<> (acl_actorsEntity, HttpStatus.OK);
             } catch (Exception e) {
                 ok.setTxt(e);
             }
         } while (false);
         if (ok.is == false) {
-            retorno = new ResponseEntity<>(ok.getTxt(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>(ok.getTxt(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return retorno;
     }

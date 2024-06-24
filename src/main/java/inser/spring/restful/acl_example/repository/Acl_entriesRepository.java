@@ -1,5 +1,6 @@
 package inser.spring.restful.acl_example.repository;
 
+import inser.spring.restful.acl_example.entity.Acl_actorsEntity;
 import inser.spring.restful.acl_example.entity.Acl_entriesEntity;
 import inser.spring.restful.acl_example.entity.Acl_entriesId;
 import java.util.Collection;
@@ -21,6 +22,7 @@ interface Acl_entriesRepository extends JpaRepository<Acl_entriesEntity, Acl_ent
             + "a.id_object_csv = :id_object_csv "
             + "and "
             + "a.ref_acl_actor = :id_acl_actor "
-            + "order by a.id_list_order")
-    Collection<Acl_entriesEntity> findByclass_and_object_csv(String id_acl_actor, String id_acl_class, String id_objects_csv);
+            + "order by a.id_list_order"
+            )
+    Collection<Acl_entriesEntity> findByClass_and_object_csv(String id_acl_class, String id_object_csv, Acl_actorsEntity id_acl_actor);
 }

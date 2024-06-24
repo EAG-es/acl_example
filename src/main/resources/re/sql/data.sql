@@ -11,7 +11,7 @@ INSERT INTO acl_example.acl_classes (id_acl_class) VALUES
 	 ('inser.spring.restful.acl_example.repository.Acl_jpaRepository');
 
 INSERT INTO acl_example.acl_class_objects 
-        (id_acl_class,id_objects_csv,ref_parent_class,ref_parent_object_csv,ref_owner_acl_actor) 
+        (id_acl_class,id_object_csv,ref_parent_class,ref_parent_object_csv,ref_owner_acl_actor)
 VALUES
 # Diferent object ids for the same class
         ('inser.spring.restful.acl_example.repository.Acl_jpaRepository','acl_jpaRepository',NULL,NULL,'jpaRepository_group'),

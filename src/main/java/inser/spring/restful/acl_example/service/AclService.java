@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
  * @author emilio
  */
 @Service
-public class AclService extends inser.spring.restful.acl_example.repository.AclRepositoryService {
+public class AclService extends AclBase {
     // Properties file for translactions
     public static String k_in_route;
     static {
@@ -79,14 +79,14 @@ public class AclService extends inser.spring.restful.acl_example.repository.AclR
         return get_actors(k_actor_type_group);
     }
 
-    public boolean is_any_actor(String id_acl_actor) throws Exception {
+    public boolean is_any_actor(Acl_actorsEntity id_acl_actor) throws Exception {
         Oks ok = new Oks();
 //        ResourceBundle in = null;
         do {
             try {
 //                in = ResourceBundles.getBundle(k_in_route);
                 Optional<Acl_actorsEntity> acl_actorsEntity_optional;
-                acl_actorsEntity_optional = aclRepository.acl_actorsRepository.findById(id_acl_actor);
+                acl_actorsEntity_optional = aclRepository.acl_actorsRepository.findById(id_acl_actor.getId_acl_actor());
                 return acl_actorsEntity_optional.isPresent();
             } catch (Exception e) {
                 ok.setTxt(e);
@@ -105,7 +105,7 @@ public class AclService extends inser.spring.restful.acl_example.repository.AclR
             try {
 //                in = ResourceBundles.getBundle(k_in_route);
                 Optional<Acl_actorsEntity> acl_actorsEntity_optional;
-                acl_actorsEntity_optional = aclRepository.acl_actorsRepository.findById(this.acl_actorsEntity.getId_acl_actor());
+                acl_actorsEntity_optional = aclRepository.acl_actorsRepository.findById(this.acl_actorsEntity_to_check.getId_acl_actor());
                 if (acl_actorsEntity_optional.isPresent()) {
                     return (acl_actorsEntity_optional.get().getPrincipal_type() == actor_type);
                 }
@@ -132,8 +132,8 @@ public class AclService extends inser.spring.restful.acl_example.repository.AclR
      * @return
      * @throws Exception
      */
-    public boolean is_in_actor_groups(String id_acl_actor_group) throws Exception {
-        return _is_actor_in_actor_groups(acl_actorsEntity.getId_acl_actor(), id_acl_actor_group);
+    public boolean is_in_actor_groups(Acl_actorsEntity id_acl_actor_group) throws Exception {
+        return is_actor_in_group(acl_actorsEntity_to_check, id_acl_actor_group);
     }
 
     public Collection<Acl_classesEntity> get_classes() throws Exception {

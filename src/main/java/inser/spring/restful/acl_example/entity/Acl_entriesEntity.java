@@ -36,12 +36,6 @@ public class Acl_entriesEntity {
     public static final String k_entry_permit_operate_admin = k_entry_permit_operate_crwdx
             + k_entry_permit_grant;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_acl_class", referencedColumnName="id_acl_class")
-    @JoinColumn(name = "id_object_csv", referencedColumnName="id_object_csv")
-    @JoinColumn(name = "id_list_order", referencedColumnName="id_list_order")
-    private Acl_entriesEntity id;
-
     @Id
     private String id_acl_class;
 
@@ -52,7 +46,12 @@ public class Acl_entriesEntity {
     private Integer id_list_order;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ref_acl_actor", nullable = false)
+    @JoinColumn(name = "id_acl_class", referencedColumnName="id_acl_class")
+    @JoinColumn(name = "id_object_csv", referencedColumnName="id_object_csv")
+    private Acl_class_objectsEntity id_class_object;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ref_acl_actor", referencedColumnName="id_acl_actor", nullable = false)
     private Acl_actorsEntity ref_acl_actor;
 
     @Column(name = "permits_csv", nullable = false)

@@ -1,6 +1,7 @@
 package inser.spring.restful.acl_example.repository;
 
 import innui.modelos.errors.Oks;
+import inser.spring.restful.acl_example.entity.Acl_actorsEntity;
 import inser.spring.restful.acl_example.entity.Acl_class_objectsId;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,15 +36,34 @@ public class Acl_jpaRepository<R extends JpaRepository<T, ID>, T extends Object,
         k_in_route = "in/" + paquete_tex + "/in";
     }
     public static String k_acl_jpaRepository_group = "jpaRepository_group";
-    public static String k_acl_jpaRepository_id = "inser.spring.restful.acl_example.repository.Acl_jpaRepository";
+    public static String k_acl_jpaRepository_admin = "jpaRepository_admin";
+    public static String k_acl_jpaRepository_write = "jpaRepository_write";
+    public static String k_acl_jpaRepository_id_class = "inser.spring.restful.acl_example.repository.Acl_jpaRepository";
+    public static String k_acl_jpaRepository_id_object = "acl_jpaRepository";
+    static Acl_actorsEntity required_group = new Acl_actorsEntity() {
+        {
+            this.setId_acl_actor(k_acl_jpaRepository_group);
+        }
+    };
 
     @Setter
     @Getter
     R jpaRepository;
-    AclRepositoryService aclRepositoryService;
+    AclBase aclBase;
     Acl_class_objectsId acl_class_objectsId;
 
-    public Acl_jpaRepository(R jpaRepository, AclRepositoryService aclService) throws Exception {
+    public static class AclOperationNotAllowed extends RuntimeException {
+        public AclOperationNotAllowed () {
+            super();
+        }
+        public AclOperationNotAllowed(String message) {
+            super(message);
+        }
+        public AclOperationNotAllowed(Throwable cause) {
+            super(cause);
+        }
+    }
+    public Acl_jpaRepository(R jpaRepository, AclBase aclService) throws Exception {
         Oks ok = new Oks();
         init(jpaRepository, aclService, ok);
         if (ok.is == false) {
@@ -51,14 +71,16 @@ public class Acl_jpaRepository<R extends JpaRepository<T, ID>, T extends Object,
         }
     }
 
-    public boolean init(R jpaRepository, AclRepositoryService aclService, Oks ok, Object ... extras_array) throws Exception {
+    public boolean init(R jpaRepository, AclBase aclService, Oks ok, Object ... extras_array) throws Exception {
         if (ok.is == false) { return false; }
         try {
             this.jpaRepository = jpaRepository;
-            this.aclRepositoryService = aclService;
+            this.aclBase = aclService;
             acl_class_objectsId = new Acl_class_objectsId();
-            acl_class_objectsId.setId_acl_class(k_acl_jpaRepository_group);
-            acl_class_objectsId.setId_acl_class(k_acl_jpaRepository_id);
+            acl_class_objectsId.setId_acl_class(k_acl_jpaRepository_id_class);
+            acl_class_objectsId.setId_object_csv(k_acl_jpaRepository_id_object);
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
             ok.setTxt(e);
         }
@@ -68,78 +90,90 @@ public class Acl_jpaRepository<R extends JpaRepository<T, ID>, T extends Object,
     @Override
     public void flush() {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_write)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_write)) {
                 jpaRepository.flush();
             } else {
-                throw new UnsupportedOperationException("flush");
+                throw new AclOperationNotAllowed("flush");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
     @Override
     public <S extends T> S saveAndFlush(S entity) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_write)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_write)) {
                 return jpaRepository.saveAndFlush(entity);
             } else {
-                throw new UnsupportedOperationException("saveAndFlush");
+                throw new AclOperationNotAllowed("saveAndFlush");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
     @Override
     public <S extends T> List<S> saveAllAndFlush(Iterable<S> entities) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_write)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_write)) {
                 return jpaRepository.saveAllAndFlush(entities);
             } else {
-                throw new UnsupportedOperationException("saveAllAndFlush");
+                throw new AclOperationNotAllowed("saveAllAndFlush");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
     @Override
     public void deleteAllInBatch(Iterable<T> entities) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_delete)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_delete)) {
                 jpaRepository.deleteAllInBatch(entities);
             } else {
-                throw new UnsupportedOperationException("deleteAllInBatch");
+                throw new AclOperationNotAllowed("deleteAllInBatch");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
     @Override
     public void deleteAllByIdInBatch(Iterable<ID> ids) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_delete)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_delete)) {
                 jpaRepository.deleteAllByIdInBatch(ids);
             } else {
-                throw new UnsupportedOperationException("deleteAllByIdInBatch");
+                throw new AclOperationNotAllowed("deleteAllByIdInBatch");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
     @Override
     public void deleteAllInBatch() {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_delete)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_delete)) {
                 jpaRepository.deleteAllInBatch();
             } else {
-                throw new UnsupportedOperationException("deleteAllInBatch");
+                throw new AclOperationNotAllowed("deleteAllInBatch");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
@@ -171,13 +205,15 @@ public class Acl_jpaRepository<R extends JpaRepository<T, ID>, T extends Object,
     @Override
     public <S extends T> List<S> saveAll(Iterable<S> entities) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_write)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_write)) {
                 return jpaRepository.saveAll(entities);
             } else {
-                throw new UnsupportedOperationException("saveAll");
+                throw new AclOperationNotAllowed("saveAll");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
@@ -194,13 +230,15 @@ public class Acl_jpaRepository<R extends JpaRepository<T, ID>, T extends Object,
     @Override
     public <S extends T> S save(S entity) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_write)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_write)) {
                 return jpaRepository.save(entity);
             } else {
-                throw new UnsupportedOperationException("save");
+                throw new AclOperationNotAllowed("save");
             }
+        } catch (AclOperationNotAllowed u) {
+            throw u;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
@@ -222,65 +260,75 @@ public class Acl_jpaRepository<R extends JpaRepository<T, ID>, T extends Object,
     @Override
     public void deleteById(ID id) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_delete)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_delete)) {
                 jpaRepository.deleteById(id);
             } else {
-                throw new UnsupportedOperationException("deleteById");
+                throw new AclOperationNotAllowed("deleteById");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
     @Override
     public void delete(T entity) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_delete)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_delete)) {
                 jpaRepository.delete(entity);
             } else {
-                throw new UnsupportedOperationException("delete");
+                throw new AclOperationNotAllowed("delete");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
     @Override
     public void deleteAllById(Iterable<? extends ID> ids) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_delete)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_delete)) {
                 jpaRepository.deleteAllById(ids);
             } else {
-                throw new UnsupportedOperationException("deleteAllById");
+                throw new AclOperationNotAllowed("deleteAllById");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
     @Override
     public void deleteAll(Iterable<? extends T> entities) {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_delete)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_delete)) {
                 jpaRepository.deleteAll(entities);
             } else {
-                throw new UnsupportedOperationException("deleteAll");
+                throw new AclOperationNotAllowed("deleteAll");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 
     @Override
     public void deleteAll() {
         try {
-            if (aclRepositoryService.hasPermission(k_acl_jpaRepository_group, acl_class_objectsId, k_entry_permit_delete)) {
+            if (aclBase.hasPermission(aclBase.acl_actorsEntity_to_check, required_group, acl_class_objectsId, k_entry_permit_delete)) {
                 jpaRepository.deleteAll();
             } else {
-                throw new UnsupportedOperationException("deleteAll");
+                throw new AclOperationNotAllowed("deleteAll");
             }
+        } catch (AclOperationNotAllowed e) {
+            throw e;
         } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            throw new AclOperationNotAllowed(e);
         }
     }
 

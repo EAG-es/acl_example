@@ -20,6 +20,6 @@ public class Acl_actorsEntity {
     private String id_acl_actor;
 
     @Column(name = "principal_type", nullable = false)
-    private Integer principal_type;
+    private Integer principal_type = k_actor_type_principal;
 
 }

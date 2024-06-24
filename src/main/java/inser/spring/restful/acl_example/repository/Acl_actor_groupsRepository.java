@@ -4,6 +4,7 @@ import inser.spring.restful.acl_example.entity.Acl_actor_groupsEntity;
 import inser.spring.restful.acl_example.entity.Acl_actor_groupsId;
 import java.util.Collection;
 
+import inser.spring.restful.acl_example.entity.Acl_actorsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
