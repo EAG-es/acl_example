@@ -1,1 +1,1 @@
-Java Spring Framework example with an Access Control List implemented
+Java Spring JPA applications with an example of ACL (applied on its own JPA methods)
