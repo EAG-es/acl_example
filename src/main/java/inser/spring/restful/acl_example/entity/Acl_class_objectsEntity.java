@@ -12,9 +12,11 @@ import lombok.Setter;
 public class Acl_class_objectsEntity {
 
     @Id
+    private String id_acl_class;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_acl_class", nullable = false)
-    private Acl_classesEntity id_acl_class;
+    private Acl_classesEntity reg_id_acl_class;
 
     @Id
     private String id_object_csv;

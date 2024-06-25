@@ -87,9 +87,10 @@ public class AclBase {
                                 Acl_class_objectsEntity parenty_acl_class_objectsEntity;
                                 parenty_acl_class_objectsEntity = parenty_acl_class_objectsEntity_optional.get();
                                 Acl_class_objectsEntity acl_class_objectsEntity = parenty_acl_class_objectsEntity.getRef_parent();
-                                acl_class_objectsId.setId_acl_class(acl_class_objectsEntity.getId_acl_class().getId_acl_class());
-                                acl_class_objectsId.setId_object_csv(acl_class_objectsEntity.getId_object_csv());
-                                retorno = hasPermission(id_acl_actor_or_group, acl_class_objectsId, ok_permits_csv);
+                                Acl_class_objectsId new_acl_class_objectsId = new Acl_class_objectsId();
+                                new_acl_class_objectsId.setId_acl_class(acl_class_objectsEntity.getId_acl_class());
+                                new_acl_class_objectsId.setId_object_csv(acl_class_objectsEntity.getId_object_csv());
+                                retorno = hasPermission(id_acl_actor_or_group, new_acl_class_objectsId, ok_permits_csv);
                                 if (retorno) {
                                     return true;
                                 }
@@ -136,12 +137,12 @@ public class AclBase {
      * @throws Exception
      */
     public Boolean hasPermission(Acl_actorsEntity id_acl_actor, Acl_actorsEntity id_acl_group, Acl_class_objectsId acl_class_objectsId, String ok_permits_csv) throws Exception {
-        if (id_acl_group != null) {
+        if (hasPermission(id_acl_actor, acl_class_objectsId, ok_permits_csv)) {
+            return true;
+        } else if (id_acl_group != null) {
             if (is_actor_in_group(id_acl_actor, id_acl_group)) {
                 return hasPermission(id_acl_group, acl_class_objectsId, ok_permits_csv);
             }
-        } else {
-            return hasPermission(id_acl_actor, acl_class_objectsId, ok_permits_csv);
         }
         return false;
     }
